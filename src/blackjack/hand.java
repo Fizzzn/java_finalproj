@@ -2,10 +2,11 @@ package blackjack;
 
 import java.util.*;
 
-public class hand {
-    private List<card> hand = new ArrayList<>();
 
-    public void drawHand(deck deck, int count) {
+public class hand {
+    private List<Card> hand = new ArrayList<>();
+
+    public void drawHand(Deck deck, int count) {
         for (int i = 0; i < count; i++) {
             hand.add(deck.draw());
         }
@@ -13,7 +14,7 @@ public class hand {
 
     public void showhand() {
         for (int line = 0; line < 7; line++) {
-            for (card card : hand) {
+            for (Card card : hand) {
                 System.out.print(card.getcardoneline(line) + " ");
             }
             System.out.println();
@@ -49,7 +50,7 @@ public class hand {
     public int getHandvalue() {
         int value = 0;
         int aceCount = 0;
-        for (card card : hand) {
+        for (Card card : hand) {
             int cardValue = card.getvalue();
             value += cardValue;
             if (cardValue == 11) {
