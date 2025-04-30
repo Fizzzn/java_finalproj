@@ -1,39 +1,69 @@
-package blackjack;
+package game.mygame;
 
-public class card {
-    private String rank;
-    private String symbol;
+import java.util.*;
 
-    public card(String rank, String symbol) {
-        this.rank = rank;
-        this.symbol = symbol;
-    }
+public class hand {
+    private List<card> hand = new ArrayList<>();
 
-    public String getcardASCII() {
-        String top = "┌─────────┐";
-        String empty = "│         │";
-        String mid = String.format("│    %s    │", symbol);
-        String rankLeft = String.format("│ %-2s      │", rank);
-        String rankRight = String.format("│      %-2s │", rank);
-        String bottom = "└─────────┘";
-
-        return String.join("\n", top, rankLeft, empty, mid, empty, rankRight, bottom);
-    }
-
-    public String getcardoneline(int line) {
-        String[] lines = getcardASCII().split("\n");
-        return lines[line];
-    }
-    public int getvalue(){ // issue solved-- program understands card value now
-        switch (rank){
-            case "A":
-                return 11; // gonna come back to this later
-            case "K":
-            case "Q":
-            case "J":
-                return 10;
-            default:
-                return Integer.parseInt(rank); // our 2-10
+    public void drawHand(deck deck, int count) {
+        for (int i = 0; i < count; i++) {
+            hand.add(deck.draw());
         }
     }
+
+    public void showhand() {
+        for (int line = 0; line < 7; line++) {
+            for (card card : hand) {
+                System.out.print(card.getcardoneline(line) + " ");
+            }
+            System.out.println();
+        }
+    }
+
+    public void showOneCard() {
+        for (int line = 0; line < 7; line++) {
+            // Show first card fully
+            System.out.print(hand.get(0).getcardoneline(line) + " ");
+
+            // Show back of card for the rest
+            for (int i = 1; i < hand.size(); i++) {
+                System.out.print(getHiddenCardLine(line) + " ");
+            }
+            System.out.println();
+        }
+    }
+    //hiding card
+    private String getHiddenCardLine(int line) {
+        String[] hidden = {
+            "┌─────────┐",
+            "│░░░░░░░░░│",
+            "│░░░░░░░░░│",
+            "│░░ HIDDEN ░│",
+            "│░░░░░░░░░│",
+            "│░░░░░░░░░│",
+            "└─────────┘"
+        };
+        return hidden[line];
+    }
+
+    public int getHandvalue() {
+        int value = 0;
+        int aceCount = 0;
+        for (card card : hand) {
+            int cardValue = card.getvalue();
+            value += cardValue;
+            if (cardValue == 11) {
+                aceCount++;
+            }
+        }
+        while (value > 21 && aceCount > 0) {
+            value -= 10;
+            aceCount--;
+        }
+        return value;
+    }
+    public boolean isBlackjack() {
+        return hand.size() == 2 && getHandvalue() == 21;
+    }
+    
 }
