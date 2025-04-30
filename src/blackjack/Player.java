@@ -1,4 +1,4 @@
-package game.mygame;
+package blackjack;
 // inheritance from participant
 public class Player extends Participant {
     private String name;
