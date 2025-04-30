@@ -1,4 +1,4 @@
-package Blackjack;
+package blackjack;
 // usd in this class: abstraction and inheritance
 public abstract class Participant {
     protected hand hand = new hand();
