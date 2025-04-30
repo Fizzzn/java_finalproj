@@ -1,4 +1,5 @@
-package blackjack;
+package game.mygame;
+
 import java.util.*;
 
 public class hand {
@@ -19,23 +20,50 @@ public class hand {
         }
     }
 
-    public int getHandvalue(){
+    public void showOneCard() {
+        for (int line = 0; line < 7; line++) {
+            // Show first card fully
+            System.out.print(hand.get(0).getcardoneline(line) + " ");
+
+            // Show back of card for the rest
+            for (int i = 1; i < hand.size(); i++) {
+                System.out.print(getHiddenCardLine(line) + " ");
+            }
+            System.out.println();
+        }
+    }
+    //hiding card
+    private String getHiddenCardLine(int line) {
+        String[] hidden = {
+            "┌─────────┐",
+            "│░░░░░░░░░│",
+            "│░░░░░░░░░│",
+            "│░░ HIDDEN ░│",
+            "│░░░░░░░░░│",
+            "│░░░░░░░░░│",
+            "└─────────┘"
+        };
+        return hidden[line];
+    }
+
+    public int getHandvalue() {
         int value = 0;
         int aceCount = 0;
-
-        for(card card : hand){
+        for (card card : hand) {
             int cardValue = card.getvalue();
             value += cardValue;
-            if(cardValue == 11){
+            if (cardValue == 11) {
                 aceCount++;
             }
         }
-            //adjusting acees values too easy
-        while(value > 21 && aceCount > 0){
-            value -= 10; // treating ace as 1 instead of 11
+        while (value > 21 && aceCount > 0) {
+            value -= 10;
             aceCount--;
         }
         return value;
     }
-
+    public boolean isBlackjack() {
+        return hand.size() == 2 && getHandvalue() == 21;
+    }
+    
 }
