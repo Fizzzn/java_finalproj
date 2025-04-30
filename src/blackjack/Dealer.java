@@ -6,7 +6,7 @@ public class Dealer extends Participant {
         this.hand = new hand();
     }
 
-    public void playTurn(deck deck) {
+    public void playTurn(Deck deck) {
         System.out.println("\nDealer's Turn:");
         while (hand.getHandvalue() < 17) {
             System.out.println("Dealer hits.");
