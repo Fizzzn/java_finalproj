@@ -66,9 +66,6 @@ public class Main {
                 }
         
 
-
-
-
        //TEST-- cards drawn -- hand.drawHand(deck, 5); // Draw 5 cards
        //TEST-- cards print -- hand.showhand();        // Print them
     }
