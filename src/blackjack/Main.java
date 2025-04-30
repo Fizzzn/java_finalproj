@@ -1,4 +1,4 @@
-package game.mygame;
+package blackjack;
 import java.util.Scanner;
 
 public class Main {
@@ -52,8 +52,8 @@ public class Main {
         int dealerValue = dealer.getHandvalue();
 
         System.out.println("\nFinal Results: ");
-        System.out.println("Your total: ");
-        System.out.println("Dealers total: ");
+        System.out.println("Your total: " + playerValue);
+        System.out.println("Dealers total: " + dealerValue);
 
         if(playerValue > dealerValue){
             System.out.println("You win!");

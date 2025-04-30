@@ -1,4 +1,4 @@
-package game.mygame;
+package blackjack;
 
 public class card {
     private String rank;

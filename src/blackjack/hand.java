@@ -1,4 +1,4 @@
-package game.mygame;
+package blackjack;
 import java.util.*;
 
 public class hand {
