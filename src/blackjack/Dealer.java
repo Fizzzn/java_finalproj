@@ -1,0 +1,17 @@
+package game.mygame;
+// inheritance from participant
+public class Dealer extends Participant {
+
+    public Dealer() {
+        this.hand = new hand();
+    }
+
+    public void playTurn(deck deck) {
+        System.out.println("\nDealer's Turn:");
+        while (hand.getHandvalue() < 17) {
+            System.out.println("Dealer hits.");
+            hand.drawHand(deck, 1);
+            hand.showhand();
+        }
+    }
+}
