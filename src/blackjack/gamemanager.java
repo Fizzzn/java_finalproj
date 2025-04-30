@@ -8,8 +8,8 @@ public class gamemanager {
     private int highScore;
     private int credits;
     private int currentBet;
-    private Player player;
-    private Dealer dealer;
+    private Participant player;
+    private Participant dealer;
     private Scanner scanner;
 
     public gamemanager(String playerName) {
@@ -24,22 +24,18 @@ public class gamemanager {
         while (credits > 0) {
             System.out.println("\nCredits: " + credits);
 
-            // Asking bet amount
             while (true) {
                 System.out.print("How much would you like to bet? (Available: " + credits + "): ");
                 try {
                     currentBet = Integer.parseInt(scanner.nextLine());
-                    if (currentBet > 0 && currentBet <= credits) {
-                        break;
-                    } else {
-                        System.out.println("Invalid bet amount.");
-                    }
+                    if (currentBet > 0 && currentBet <= credits) break;
+                    System.out.println("Invalid bet amount.");
                 } catch (NumberFormatException e) {
                     System.out.println("Please enter a valid number.");
                 }
             }
 
-            deck deck = new deck();
+            Deck deck = new Deck();
             player.newHand(deck);
             dealer.newHand(deck);
 
@@ -50,7 +46,6 @@ public class gamemanager {
                 System.out.println("\nYour hand:");
                 player.showHand();
                 System.out.println("Total: " + player.getHandValue());
-
                 System.out.println("\nDealer's hand:");
                 dealer.revealHand();
                 System.out.println("Total: " + dealer.getHandValue());
@@ -59,45 +54,26 @@ public class gamemanager {
                     System.out.println("Both have Blackjack! It's a tie.");
                 } else if (playerBJ) {
                     System.out.println(
-    "██████╗ ██╗      █████╗  ██████╗██╗  ██╗      ██╗  ████╗  ██████╗ ██╗  ██╗\n" +
-    "██╔══██╗██║     ██╔══██╗██╔════╝██║ ██╔╝      ██║ ██╔══██╗██╔═══╝ ██║ ██╔╝\n" +
-    "██████╔╝██║     ███████║██║     █████╔╝  ██   ██║ ███████║██║     █████╔╝\n" +
-    "██╔══██ ██║     ██╔══██║██║     ██╔═██╗  ██   ██║ ██╔══██║██║     ██╔═██╗\n" +
-    "███████ ███████╗██║  ██║╚██████╗██║  ██╗ ╚█████╔╝ ██║  ██║╚██████╗██║  ██╗\n" +
-    "╚═════╝ ╚══════╝╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝  ╚════╝  ╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝\n"+
-                    "Blackjack! You win with a 3:2 bonus payout!");
+"██████╗ ██╗      █████╗  ██████╗██╗  ██╗      ██╗  ████╗  ██████╗ ██╗  ██╗\n" +
+"██╔══██╗██║     ██╔══██╗██╔════╝██║ ██╔╝      ██║ ██╔══██╗██╔═══╝ ██║ ██╔╝\n" +
+"██████╔╝██║     ███████║██║     █████╔╝  ██   ██║ ███████║██║     █████╔╝\n" +
+"██╔══██ ██║     ██╔══██║██║     ██╔═██╗  ██   ██║ ██╔══██║██║     ██╔═██╗\n" +
+"███████ ███████╗██║  ██║╚██████╗██║  ██╗ ╚█████╔╝ ██║  ██║╚██████╗██║  ██╗\n" +
+"╚═════╝ ╚══════╝╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝  ╚════╝  ╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝\n" +
+"Blackjack! You win with a 3:2 bonus payout!");
                     credits += (int)(currentBet * 1.5);
                 } else {
                     System.out.println("Dealer has Blackjack! You lose.");
                     credits -= currentBet;
                 }
 
-                if (credits > highScore) {
-                    highScore = credits;
-                    saveHighScore(highScore);
-                }
-
-                if (credits <= 0) {
-                    System.out.println("\nGAME OVER! Final credits: 0");
-                    System.out.println("Highest credits earned: " + highScore);
-                    break;
-                }
-
-                System.out.print("\nWould you like to play another round? (y/n): ");
-                if (!scanner.nextLine().equalsIgnoreCase("y")) {
-                    System.out.println("Thanks for playing! Final credits: " + credits);
-                    System.out.println("Highest credits earned: " + highScore);
-                    break;
-                } else {
-                    continue;
-                }
+                handleEndOfRound();
+                continue;
             }
 
-            // Dealer doing dealer things by only showing one card
             System.out.println("\nDealer's visible card:");
             dealer.showOneCard();
 
-            // Player Turn
             while (true) {
                 System.out.println("\nYour Hand:");
                 player.showHand();
@@ -106,23 +82,19 @@ public class gamemanager {
                 if (player.getHandValue() > 21) {
                     System.out.println("You bust! Dealer wins!");
                     credits -= currentBet;
-                    break;
+                    handleEndOfRound();
+                    continue;
                 }
 
                 System.out.print("Hit (h) or Stand (s)? ");
-                String move = scanner.nextLine();
-
-                if (move.equalsIgnoreCase("h")) {
-                    player.hit(deck);
-                } else {
-                    break;
-                }
+                if (!scanner.nextLine().equalsIgnoreCase("h")) break;
+                player.hit(deck);
             }
 
             if (player.getHandValue() <= 21) {
                 System.out.println("\nDealer's full hand revealed:");
                 dealer.revealHand();
-                dealer.playTurn(deck);
+                ((Dealer) dealer).playTurn(deck);
 
                 System.out.println("\nFinal Results:");
                 System.out.println("Your total: " + player.getHandValue());
@@ -131,31 +103,46 @@ public class gamemanager {
                 if (dealer.getHandValue() > 21 || player.getHandValue() > dealer.getHandValue()) {
                     System.out.println("You win!");
                     credits += currentBet;
+                    handleEndOfRound();
+                    continue;
                 } else if (player.getHandValue() < dealer.getHandValue()) {
                     System.out.println("Dealer wins!");
                     credits -= currentBet;
+                    handleEndOfRound();
+                    continue;
                 } else {
                     System.out.println("STANDOFF (tie...)");
                 }
             }
 
-            if (credits > highScore) {
-                highScore = credits;
-                saveHighScore(highScore);
-            }
+            handleEndOfRound();
+        }
+    }
 
-            if (credits <= 0) {
-                System.out.println("\nGAME OVER! Final credits: 0");
-                System.out.println("Highest credits earned: " + highScore);
-                break;
-            }
+    private void handleEndOfRound() {
+        if (credits > highScore) {
+            highScore = credits;
+            saveHighScore(highScore);
+        }
 
-            System.out.print("\nWould you like to play another round? (y/n): ");
-            if (!scanner.nextLine().equalsIgnoreCase("y")) {
-                System.out.println("Thanks for playing! Final credits: " + credits);
-                System.out.println("Highest credits earned: " + highScore);
-                break;
+        if (credits <= 0) {
+            System.out.println("\nGAME OVER! Final credits: 0");
+            System.out.println("Highest credits earned: " + highScore);
+            System.out.print("Would you like a rematch? (y/n): ");
+            if (scanner.nextLine().equalsIgnoreCase("y")) {
+                credits = STARTING_CREDITS;
+                startGameLoop();
+            } else {
+                System.out.println("Thanks for playing!");
+                System.exit(0);
             }
+        }
+
+        System.out.print("\nWould you like to play another round? (y/n): ");
+        if (!scanner.nextLine().equalsIgnoreCase("y")) {
+            System.out.println("Thanks for playing! Final credits: " + credits);
+            System.out.println("Highest credits earned: " + highScore);
+            System.exit(0);
         }
     }
 
@@ -170,7 +157,7 @@ public class gamemanager {
     private void saveHighScore(int score) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("highscore.txt"))) {
             writer.write(String.valueOf(score));
-        } catch (IOException e) { //fail case if high score not obtained
+        } catch (IOException e) {
             System.out.println("Failed to save high score.");
         }
     }
